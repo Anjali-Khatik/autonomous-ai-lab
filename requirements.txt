@@ -1,0 +1,79 @@
+# ==============================================================
+# Autonomous AI Lab — requirements.txt (V1 stack, AutoGluon engine, CPU)
+# Python 3.11 recommended (AutoGluon supports >=3.10,<3.14)
+#
+# Install (CPU-only — AutoGluon's tabular models are CPU-bound):
+#   pip install -U pip setuptools wheel
+#   pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+#
+# The --extra-index-url makes AutoGluon's torch dependency resolve to a
+# plain CPU build. No CUDA/ROCm needed for V1 classification/regression.
+# ==============================================================
+
+# --- Orchestration + reasoning LLM -----------------------------
+langgraph>=1.2,<2.0            # graph/state machine, HITL, conditional edges
+langchain-fireworks>=1.4       # ChatFireworks — reasoning agents (Llama/Qwen)
+                               # requires env var FIREWORKS_API_KEY
+                               # (pulls langchain-core transitively)
+
+# --- AutoML engine: AutoGluon (tabular only for V1) ------------
+# Tabular-only subpackage keeps the install lean (no multimodal/
+# vision/timeseries). It pulls autogluon.core/.common/.features.
+autogluon.tabular==1.5.0
+# For V2 forecasting family, add:  autogluon.timeseries==1.5.0
+
+# --- Core data / ML (explicit; AutoGluon also uses these) ------
+pandas>=2.2
+numpy>=1.26                    # >=1.26 allows both numpy 1.26 and 2.x
+scikit-learn>=1.5             # EDA, splits, metrics, cleaning
+scipy>=1.13                    # KS test for the leakage detector
+pyarrow>=16.0                  # read/write cleaned_data.parquet
+
+# --- Models (explicit: Data Scientist references them directly) -
+xgboost>=2.1
+lightgbm>=4.5
+
+# --- Experiment tracking ---------------------------------------
+mlflow>=2.15                   # run/metric/artifact logging + lineage
+
+# --- Serialization ---------------------------------------------
+joblib>=1.4                    # AutoGluon predictors save to a dir;
+                               # joblib still used for pipeline/meta objects
+
+# --- Utilities -------------------------------------------------
+pydantic>=2.7                  # typed LabState / tool schemas
+python-dotenv>=1.0            # load FIREWORKS_API_KEY from .env
+
+# --- Testing ---------------------------------------------------
+pytest>=8.0                    # acceptance tests (Critic retrain loop, etc.)
+
+
+# ==============================================================
+# OPTIONAL — ONNX export (joblib/AutoGluon's own save is enough for V1)
+# ==============================================================
+# onnx>=1.16
+# skl2onnx>=1.17
+# onnxmltools>=1.12
+
+
+# ==============================================================
+# V2 — enable when you add these families / features (not V1)
+# ==============================================================
+# autogluon.timeseries==1.5.0  # time-series forecasting family
+# matplotlib>=3.9              # Experiment Manager comparison charts
+# plotly>=5.22
+# seaborn>=0.13
+
+
+# ==============================================================
+# GPU (OPTIONAL, not needed for V1) — use NVIDIA/CUDA, not ROCm.
+# AutoGluon's tabular ensemble (LightGBM/XGBoost/CatBoost/RF) is
+# CPU-bound; GPU only helps its deep-learning models. If you later
+# add V2 deep/multimodal families and have an NVIDIA card, install a
+# CUDA torch build instead of the CPU index above — get the exact
+# cuXXX tag from https://pytorch.org (it tracks your CUDA version):
+#
+#   pip install torch --index-url https://download.pytorch.org/whl/cu124
+#
+# On macOS, AutoGluon does not support GPU — CPU only regardless.
+# ==============================================================
