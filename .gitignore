@@ -5,8 +5,5 @@ __pycache__/
 .env
 .env.*
 !.env.example
-Autonomous-AI-Lab-Build-Spec_1.md
-Autonomous-AI-Lab-Product-Spec.md
-PROGRESS.md
-CLAUDE_CODE_KICKOFF.md
 .vscode/
+outputs/
